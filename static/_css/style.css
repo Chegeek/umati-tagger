@@ -1,0 +1,109 @@
+/* content */
+body {
+	background:#ececec;
+	color:#000;
+	margin:0;
+	padding:0;
+    font-family: Garamond,Arial,Helvetica;
+}
+
+#container {
+	margin: 40px auto;
+	overflow: hidden;
+	width: 800px;
+	background-color:white;
+	border: #ccc solid 1px;
+	height: 500px;
+}
+
+.column {
+	float: left;
+	width: 350px;
+}
+
+#todo-items {
+	border-right: #ccc solid 1px;
+}
+
+#todo-header {
+	border-bottom:#ccc solid 1px;
+	padding-left: 5px;
+}
+
+#todo-form-add {
+    width: 240px;
+    height: 20px;
+	background-color: #ececec;
+    border: 1px solid black;
+	font-size: 14px;
+	padding-left: 3px;
+	border-radius: 15px 15px 15px 15px;
+	box-shadow: 5px 5px 5px;
+	
+}
+
+#todo-form-add:hover, #todo-form-add:focus {
+	background: #ffffed;
+	color: red;}
+
+#todo-fields
+{
+	border: #ccc solid 1px;
+}
+
+#todo-input
+{
+	padding-left: 5px;
+}
+
+#todo-submit{
+  height:25px;
+  width: 65px;
+  border-radius: 15px 15px 15px 15px;
+  padding:0;
+  background-color: #ececec;
+  color: blue;
+}
+
+
+#todo-list
+{
+	list-style-type:circle;
+	font-size: 16px;
+}
+
+.item-added {
+	border-bottom: #ccc solid 1px;
+	-webkit-animation-name: fadeIn;
+	-webkit-animation-duration: 1s;
+}
+
+@-webkit-keyframes fadeIn {
+	0% {
+		opacity: 0;
+		-webkit-transform: translateY(-20px);
+		}	
+	100% {
+		opacity: 1;
+		-webkit-transform: translateY(0);
+		}
+}
+.todo-list-remove {color: blue}
+
+.todo-list-remove:hover {color: red}
+
+.item-removed {
+	-webkit-animation-name: fadeOut;
+	-webkit-animation-duration: 500;
+}
+
+@-webkit-keyframes fadeOut {
+	0% {
+		opacity: 1;
+		-webkit-transform: translateY(0);
+		}	
+	100% {
+		opacity: 0;
+		-webkit-transform: translateY(-20px);
+		}
+}

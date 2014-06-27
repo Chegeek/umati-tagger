@@ -1,0 +1,47 @@
+<!DOCTYPE html>	
+<html>
+<head>
+    <title>Tagger</title>
+    
+    <!-- link to css file -->
+    <link rel="stylesheet" type="text/css" href="../static/_css/style.css" />
+
+    <!-- link to javascript files -->
+    <script src="../static/_js/jquery-1.10.2.min.js"></script>
+    <!-- <script src="../static/_js/script.js"></script> -->
+	
+</head>
+<body>
+	<div id="container">
+		<!--Form Header-->
+		<header id = "todo-header">
+			<h1>Tagger:</h1>
+			<span>
+				<a id="save-button" href="#" onclick="createTagSession()" class="myButton">Save Labels</a>
+			</span> 
+		</header>
+
+		<!-- the question and response settings -->
+		<div id='settings'>
+			<span>
+				<label>Is this interesting speach?</label>
+			</span>
+			<div id ='responses'>
+			<span>
+				<input type='text' id='tagger_name'></input>
+				<input type='text' id='tagger_email'></input>
+				<input type='text' id='number_to_tag'></input>
+				<a id="save-button" href="#" onclick="addSessionDetails()" class="myButton">Add</a>
+			</span>				
+			</div>			
+		</div>
+
+		<!-- question to be answered -->
+		<div id='status_bar'>
+			<span>
+				<a id="save-button" href="#" onclick="createTagSession()" class="myButton">Save Labels</a>
+			</span>
+		</div>
+	</div>
+</body>
+</html>
