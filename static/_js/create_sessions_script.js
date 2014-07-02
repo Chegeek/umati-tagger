@@ -25,14 +25,14 @@ function createTagSession() {
 	console.log(TAGGERS)
 	var sessionsData = {'sessionsObject' : JSON.stringify({'taggers_info': TAGGERS})}
 	
-	// $.ajax({
-	// 	url: 'create',
-	// 	type: 'POST',
-	// 	data: sessionsData,
-	// 	dataType: "json"
-	// }).success(function (data) {
-	// 	console.log(data);
-	// });
+	$.ajax({
+		url: 'create',
+		type: 'POST',
+		data: sessionsData,
+		dataType: "json"
+	}).success(function (data) {
+		console.log(data);
+	});
 }
 
 function addUser() {

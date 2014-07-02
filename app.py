@@ -11,12 +11,13 @@ import csv
 
 from flask import Flask, request, session, g, redirect, url_for, \
       abort, render_template, flash, jsonify
-
 from time import strftime
+from flaskext.mail import Mail
 
 ''' ------------------------------- setup and initialize app ------------------------------- '''
 
 app = Flask(__name__)
+mail = Mail(app)
 #app.run(debug=True)
 
 ''' ---------------------------------------- Routes ---------------------------------------- '''
@@ -136,7 +137,6 @@ def create_sessions():
         
         '''' Create the dynamic path for the tagging session '''
         tag_session_url = url_for('session_code', tag_sessionid=str(user_session['tag_qid'] + '_'+ user_session['user_to_tag']))
-
         # tag_session_url = url_for('session_code', tag_sessionid=str(binascii.b2a_hex(os.urandom(10))))
 
         '''' Add to the Object of sessions to create in RedisDBase '''
@@ -145,10 +145,21 @@ def create_sessions():
     #Save each user session details to Redis     
     dbase.postUserSessionInfo(sessions_to_create)
 
-    result = {'comments': total_tags}
+    ''' --------------------------------- Code to send the emails to the users -------------------------------------- '''                  
+    # with mail.connect() as conn:
+    #     for user in users:
+    #         message = '...'
+    #         subject = "hello, %s" % user.name
+    #         msg = Message(recipients=[user.email],
+    #                       body=message,
+    #                       subject=subject)
+
+    #         conn.send(msg)        
+
+    # result = {'comments': total_tags}
     # result = {'comments': sessions_to_create}
-    return jsonify(**result)    
-    # return jsonify(sessions_to_create)
+    # return jsonify(**result)    
+    return jsonify(sessions_to_create)
 
 ''' --------------------------------- Main Function -------------------------------------- '''                  
 if __name__ == '__main__':

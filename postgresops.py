@@ -34,17 +34,12 @@ class PostGresDBase():
         self.result = self.cursor.fetchall()
         return self.result
 
-    def postTags(self, tagged_set):
-        #TODO - Optimize to execute to database only once
-        query = 'INSERT INTO tagged_data VALUES (%s)'
+    # def postTags(self, tagged_set):
+    #     #TODO - Optimize to execute to database only once
+    #     query = 'INSERT INTO tagged_data VALUES (%s)'
 
-        for tag in tagged_set['tags']:
-            self.cursor.execute(query, tagged_set['session_id'],tagged_set['session_desc'], tagged_set['tagged_by'], tag, tagged_set['tags'][tag])
+    #     for tag in tagged_set['tags']:
+    #         self.cursor.execute(query, tagged_set['session_id'],tagged_set['session_desc'], tagged_set['tagged_by'], tag, tagged_set['tags'][tag])
         
-        self.conn.commit()
+    #     self.conn.commit()
 
-''' ------------------------------- Redis Database Functions Class------------------------------- '''
-class RedisDBase():
-    def __init__(self):
-        self.conn = psycopg2.connect(**settings.dbaseConfig)
-        self.cursor = self.conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
