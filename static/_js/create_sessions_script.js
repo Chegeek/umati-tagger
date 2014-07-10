@@ -1,6 +1,14 @@
+$(document).ready(function() {
+	$(document).on('click',"a.event_remove",function (event){
+	 	($(this).parent()).parent().remove();
+	 	
+	});	
+});
+
 function createTagSession() {
 
 	if ($('#tag-question').val() == '') {
+		$('#tag-question').focus();
 		return;
 	}
 
@@ -8,6 +16,7 @@ function createTagSession() {
 	console.log(count)
 
 	if (count < 1) {
+		$('#tagger-name').focus();
 		return;
 	}
 
@@ -22,11 +31,12 @@ function createTagSession() {
 	});
 
 
-	console.log(TAGGERS)
 	var sessionsData = {'sessionsObject' : JSON.stringify({'taggers_info': TAGGERS})}
-	
+
+	console.log(sessionsData)
+
 	$.ajax({
-		url: 'create',
+		url: '/sessions/create',
 		type: 'POST',
 		data: sessionsData,
 		dataType: "json"
@@ -38,7 +48,7 @@ function createTagSession() {
 function addUser() {
 
 	var textBox;
-	console.log('Tapinda v2')
+
 	$('#create-taggers .reqText').each(function(){
 	    if ($(this).val() == '') {
 	      // Get the current textBox
@@ -49,6 +59,10 @@ function addUser() {
 	    }
 	})
 
+    if (!(validateEmail($('#tagger-email').val()))) {
+        textBox = $('#tagger-email')
+    }	
+
 	// Check to see if this we have an empty textBox. 
 	if (textBox) {
 	  // Give focus to the empty textBox.
@@ -58,6 +72,23 @@ function addUser() {
 	}
 
 	$('#taggers-table').append('<tr id="tagger_row"><td class ="edit-tagger tname">'+ $('#tagger-name').val() +'</td><td class ="edit-tag temail">' 
-		+ $('#tagger-email').val() +'</td><td class ="edit-tag tnum">' + $('#number-to-tag').val() +'</td></tr>');	
+		+ $('#tagger-email').val() +'</td><td class ="edit-tag tnum">' + $('#number-to-tag').val() +'<a href="#" class="event_remove" >&times</a></td></tr>');	
 
+	$('#create-taggers .reqText').each(function(){
+		$(this).val('');
+	});
+
+	$('#tagger-name').focus();
+
+}
+
+// Code to Validate email address using jQuery - source jQuerybyexample.com '''
+function validateEmail(sEmail) {
+    var filter = /^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+    if (filter.test(sEmail)) {
+        return true;
+    }
+    else {
+        return false;
+    }
 }

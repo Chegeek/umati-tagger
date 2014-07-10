@@ -22,6 +22,7 @@ class PostGresDBase():
         self.cursor.close()
         self.conn.close()
 
+    ''' This method returns n random comment ids dependent on the number of tags requested when sessions for a question where Created '''
     def getToTag(self, tags_needed):
         query = 'SELECT post_comments_id FROM "AutoCollected" ORDER BY RANDOM() LIMIT ' + str(tags_needed)
         self.cursor.execute(query)

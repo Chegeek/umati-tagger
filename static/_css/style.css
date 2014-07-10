@@ -28,6 +28,22 @@ body {
 
 }
 
+#landing-div {
+	margin: 40px auto;
+	overflow: hidden;
+	width: 80%;
+	padding: 30px;
+	background-color:white;
+	border: #ccc solid 1px;
+	height: 400px;
+}
+
+#login {
+	display: table;
+	margin: 0 auto;
+	z-index: 100;
+}
+
 #create-settings {
 	height: 150px;
 }
@@ -74,8 +90,12 @@ body {
 }
 
 .reqText {
-	width: 150px;
+	width: 250px;
 	margin: 10px;
+}
+
+#number-to-tag {
+	width: 80px;
 }
 
 .column {
@@ -162,7 +182,12 @@ body {
 		}
 }
 
-#save-button {
+.flash          { background: #cee5F5; padding: 0.5em;
+                  border: 1px solid #aacbe2; }
+
+.error          { background: #f0d6d6; padding: 0.5em; }                  
+
+.myButtons {
 	-moz-box-shadow:inset 1px 0px 22px -11px #ffffff;
 	-webkit-box-shadow:inset 1px 0px 22px -11px #ffffff;
 	box-shadow:inset 1px 0px 22px -11px #ffffff;
@@ -196,16 +221,31 @@ body {
 	text-decoration:none;
 	text-align:center;
 	text-shadow:0px 0px 0px #ffffff;
-
-	left: calc(100% - 210px);
 	position: absolute;
 }
-#save-button:hover {
+.myButtons:hover {
 	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #dfdfdf), color-stop(1, #ededed) );
 	background:-moz-linear-gradient( center top, #dfdfdf 5%, #ededed 100% );
 	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#dfdfdf', endColorstr='#ededed');
 	background-color:#dfdfdf;
-}#save-button:active {
+}
+.myButtons:active {
 	position:relative;
 	top:1px;
+}
+#save-sessions{
+	left: calc(90% - 210px);
+}
+
+.tick {
+	width: 70px;
+	margin: 7px 10px;
+}
+
+.tick:after{
+}
+
+.tick:hover:after{
+	color:#83d244;
+	text-shadow:0px 0px 6px #83d244;
 }

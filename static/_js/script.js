@@ -10,7 +10,6 @@ $(document).ready(function() {
 
 	console.log(TO_TAG)
 	if (TO_TAG[0]) {
-		console.log('GGG')
 		loadToTag(current)	
 	}
 	
@@ -50,11 +49,14 @@ function loadItems() {
 		async: false,
 		type: "GET"
 	}).success(function (data) {
+		console.log(data)
 		// console.log(data.comments_to_tag.length)
 		if (data.comments_to_tag) {
 			// console.log(data)
 			$('#session-user')[0].innerText = data.user_to_tag
 			$('#session-tags')[0].innerText = data.comments_to_tag.length
+			$('#tag-qst')[0].innerText = data.tag_qst
+
 			SESSION_QST = data.tag_qid
 			TO_TAG = data.comments_to_tag					
 		}
