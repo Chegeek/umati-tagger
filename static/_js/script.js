@@ -8,7 +8,7 @@ $(document).ready(function() {
 	loadItems();
 	current = 0
 
-	console.log(TO_TAG)
+	// console.log(TO_TAG)
 	if (TO_TAG[0]) {
 		loadToTag(current)	
 	}
@@ -49,7 +49,7 @@ function loadItems() {
 		async: false,
 		type: "GET"
 	}).success(function (data) {
-		console.log(data)
+		// console.log(data)
 		// console.log(data.comments_to_tag.length)
 		if (data.comments_to_tag) {
 			// console.log(data)
@@ -57,12 +57,13 @@ function loadItems() {
 			$('#session-tags')[0].innerText = data.comments_to_tag.length
 			$('#tag-qst')[0].innerText = data.tag_qst
 
-			SESSION_QST = data.tag_qid
+			SESSION_QST = data.tag_qst_id
 			TO_TAG = data.comments_to_tag					
 		}
 		else {
 			$('#session-user')[0].innerText = 'session info not found'
 			$('#session-tags')[0].innerText = 'session info not found'
+			$('#tag-qst')[0].innerText =  'session info not found'
 		}
 	});			
 }
@@ -103,6 +104,7 @@ function saveLabels() {
 	// console.log(saveItems)
 	$.ajax({
 		url: 'add',
+		async: false,
 		type: 'POST',
 		data: saveItems,
 		dataType: "json"

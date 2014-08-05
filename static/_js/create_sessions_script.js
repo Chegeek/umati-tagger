@@ -33,7 +33,7 @@ function createTagSession() {
 
 	var sessionsData = {'sessionsObject' : JSON.stringify({'taggers_info': TAGGERS})}
 
-	console.log(sessionsData)
+	// console.log(sessionsData)
 
 	$.ajax({
 		url: '/sessions/create',
