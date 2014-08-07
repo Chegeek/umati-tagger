@@ -11,8 +11,9 @@ General settings for the app!
 #dbase Configuration settings
 
 dbaseConfig = {
-  'user': 'chalenge',
-  'password': 'chalenge',
-  'host': '41.242.2.145',
-  'database': 'Umati'
+  'user': 'postgres',
+  # 'password': 'orwa',
+  # 'host': 'localhost',
+  'database': 'Umati',
+  # 'port': 5432
 }

@@ -4,57 +4,34 @@
     <title>Tagger</title>
     
     <!-- link to css file -->
-    <link rel="stylesheet" type="text/css" href="../static/_css/style.css" />
+    <!-- <link rel="stylesheet" type="text/css" href="../static/_css/style.css" /> -->
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='_css/style.css') }}">
 
     <!-- link to javascript files -->
-    <script src="../static/_js/jquery-1.10.2.min.js"></script>
-    <script src="../static/_js/script.js"></script>
+
+    <script src="../static/_js/jquery-2.1.1.min.js"></script>
+    <script src="../static/_js/create_sessions_script.js"></script>
 	
 </head>
 <body>
 	<div id="container">
 		<!--Form Header-->
+		{% for message in get_flashed_messages() %}
+  		<div class=flash>{{ message }}</div>
+  		{% endfor %}
+
 		<header id = "todo-header">
 			<h1>Tagger:</h1>
-			<span>
-				<a id="save-button" href="#" onclick="createTagSession()" class="myButton">Save Labels</a>
-			</span> 
 		</header>
 
-		<!-- the question and response settings -->
-		<div id='settings'>
+		<div id='landing-div'>
+			{% block body %}{% endblock %}
 			<span>
-				<label>Tagging Question:</label>
-				<label>Is this interesting speach?</label>
+				<p>Some message to go here</p>
 			</span>
-			<div id ='responses'>
-			<span>
-				<label>Response Answers</label>
-				<label>Yes (y) | No (n) | Hidy Ho! (h)</label>
-			</span>				
-			</div>			
+			<a id="create-sessions" href="/create" class="myButtons">Create Tagging Sessions</a>
 		</div>
-
-		<!-- question to be answered -->
-		<div id='current'>
-			<table id='record'>
-				<thead><tr><th>Page_url</th><th>Message</th><th>Message Comment</th></tr></thead>
-				<tbody></tbody>
-			</table>
-		</div>
-
-		<!-- answered questions -->
-		<div id='previous'>
-			<table>
-				<thead><tr><th>page_url</th><th>Message</th><th>Message Comment</th><th>Answer</th></tr></thead>
-				<tbody></tbody>
-			</table>
-		</div>
-		<div id='status_bar'>
-			<span>
-				<a id="save-button" href="#" onclick="saveLabels()" class="myButton">Save Labels</a>
-			</span>
-		</div>
+		
 	</div>
 </body>
 </html>

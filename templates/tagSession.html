@@ -1,28 +1,34 @@
 <!DOCTYPE html>	
 <html>
 <head>
-    <title>Tagger</title>
+    <title>Data Tagger</title>
     
     <!-- link to css file -->
-    <link rel="stylesheet" type="text/css" href="../static/_css/style.css" />
+    <link rel="stylesheet" type="text/css" href="../static/_css/bootstrap.css"/>
+    <link rel="stylesheet" type="text/css" href="../static/_css/style.css"/>
 
     <!-- link to javascript files -->
-    <script src="../static/_js/jquery-1.10.2.min.js"></script>
+    <script src="../static/_js/jquery-2.1.1.min.js"></script>
     <script src="../static/_js/script.js"></script>
 	
 </head>
 <body>
 	<div id="container">
+		{% for message in get_flashed_messages() %}
+		<!-- {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %} -->
+  		<div class=flash>{{ message }}</div>
+  		{% endfor %}		
 		<!--Form Header-->
-		<header id = "todo-header">
-			<h1>Tagger:</h1>
+		<header id = "tag-header">
+			<h1 id= 'pg_head'>Data Tagger:</h1>
 			<span>
 				<label>Session ID:</label>
 				<label id='sessionid-text'>{{session_id}}</label>
 				<label>Session User:</label>
 				<label id='session-user'></label>
 				<label>Session Tag Count:</label>
-				<label id='session-tags'></label>				
+				<label id='session-tags'></label>
+				<label id='error-msg'></label>
 			</span> 
 		</header>
 
@@ -30,7 +36,7 @@
 		<div id='settings'>
 			<span>
 				<label>Tagging Question:</label>
-				<label>Is this interesting speach?</label>
+				<label id = 'tag-qst'></label>
 			</span>
 			<div id ='responses'>
 			<span>
@@ -42,22 +48,33 @@
 
 		<!-- question to be answered -->
 		<div id='current'>
-			<table id='record'>
-				<thead><tr><th>Page_url</th><th>Message</th><th>Message Comment</th></tr></thead>
+			<label><strong>Message To Tag</strong></label>
+			<table id='record' class = 'table table-condensed'>
+				<thead><tr>
+					<th style="width: 8%">Page_url</th>
+					<th style="width: 46%">Message</th>
+					<th style="width: 46%">Message Comment</th>
+				</tr></thead>
 				<tbody></tbody>
 			</table>
 		</div>
 
 		<!-- answered questions -->
 		<div id='previous'>
-			<table>
-				<thead><tr><th>page_url</th><th>Message</th><th>Message Comment</th><th>Answer</th></tr></thead>
+			<label><strong>Records Already Tagged</strong></label>
+			<table id='previous-table' class="table table-bordered table-condensed table-hover">
+				<thead><tr>
+					<th style="width: 8%">Page Url</th>
+					<th style="width: 44%">Message</th>
+					<th style="width: 44%">Message Comment</th>
+					<th style="width: 4%">Response</th>
+				</tr></thead>
 				<tbody></tbody>
 			</table>
 		</div>
 		<div id='status_bar'>
 			<span>
-				<a id="save-button" href="#" onclick="saveLabels()" class="myButton">Save Labels</a>
+				<a id="save-button" href="#" onclick="saveLabels()" class="myButtons">Save Tagged Comments</a>
 			</span>
 		</div>
 	</div>

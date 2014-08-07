@@ -5,16 +5,20 @@ var SESSION_QST
 
 $(document).ready(function() {
 	keys =['y','n']
-	TO_TAG = loadItems();
+	loadItems();
 	current = 0
 
-	loadToTag(current)
-
+	if (TO_TAG[0]) {
+		loadToTag(current)	
+	}
+	
 	$(document).on('keypress',function (event){
 
 		key = String.fromCharCode(event.keyCode)
-
-  		if (keys.indexOf(key) == -1) {
+		if (!(TO_TAG[0])) {
+			return;
+		} 
+  		else if (keys.indexOf(key) == -1) {
   			return;
   		}
   		else {appendPrevious(key, $('#tag_item')[0].dataset.comment_pos)}
@@ -38,19 +42,30 @@ $(document).ready(function() {
 function loadItems() {
 	var temp
 	var url = '/view/' + $('#sessionid-text')[0].innerText
-	console.log(url)
+	// console.log(url)
 	$.ajax({
 		url: url,
 		async: false,
 		type: "GET"
 	}).success(function (data) {
 		console.log(data)
-		$('#session-user')[0].innerText = data.user_to_tag
-		$('#session-tags')[0].innerText = data.comments_to_tag.length
-		SESSION_QST = data.tag_qid
-		temp = data.comments_to_tag
+		// console.log(data.comments_to_tag.length)
+		if (data.comments_to_tag) {
+			// console.log(data)
+			$('#session-user')[0].innerText = data.user_to_tag
+			$('#session-tags')[0].innerText = data.comments_to_tag.length
+			$('#tag-qst')[0].innerText = data.tag_qst
+
+			SESSION_QST = data.tag_qst_id
+			TO_TAG = data.comments_to_tag					
+		}
+		else if (data.error){
+			$('#error-msg').html(data.error).style('background', 'aliceblue')
+		}
+		else {
+			document.location.href = data
+		}
 	});			
-	return temp
 }
 
 function loadToTag(num) {
@@ -63,7 +78,7 @@ function appendPrevious(key, comment_pos) {
 	var response;
 	if (key=='y') { response = 'YES'}
 	else { response = 'NO'}
-	$('#previous').append('<tr id="tagged_row" data-id="' + comment_pos +  '"><td class ="edit-tag">'
+	$('#previous-table').prepend('<tr id="tagged_row" data-id="' + comment_pos +  '"><td class ="edit-tag">'
 		+ TO_TAG[comment_pos].page_name +'</td><td class ="edit-tag">' + TO_TAG[comment_pos].post_message +'</td><td class ="edit-tag">' 
 		+ TO_TAG[comment_pos].post_comments_message +'</td><td class ="edit-tag">' + response+ '</td></tr>');
 	TAGGED_ITEMS[TO_TAG[comment_pos].post_comments_id] = response
@@ -76,41 +91,25 @@ function saveLabels() {
     	count++;
 	})
 	if (count < 1) {
-		console.log('We are not stupid');
+		$('#error-msg').html('You have not tagged any data!').style('background', 'aliceblue')
 		return;
 	}
-	// else if (count < TO_TAG.length) {
-	// 	console.log('We cant do that at the moment');
-	// 	return;
-	// }
-	// var dataObject = JSON.stringify({'session_id' : $('#sessionid-text')[0].innerText, 'session_qst' : SESSION_QST, \
-	// 	'session_desc' : 'First Test session description', 'tagged_by': 'chalenge', 'tags': TAGGED_ITEMS})
 	var saveItems = {'toSave' : JSON.stringify({'session_id' : $('#sessionid-text')[0].innerText, 'session_qst' : SESSION_QST, 'session_desc' : 'First Test session description', 'tagged_by': $('#session-user')[0].innerText, 'tag_pos': count, 'tags': TAGGED_ITEMS})}
-	// console.log(saveItems)
+
 	$.ajax({
-		url: 'add',
+		url: '/savelabels',
+		async: false,
 		type: 'POST',
-		data: saveItems,
-		dataType: "json"
+		data: saveItems
 	}).success(function (data) {
-		console.log(data);
+		document.location.href = data
 	});
 }
 
-function createTagSession() {
+function addUser() {
+	// $('#previous-table').prepend('<tr id="tagged_row" data-id="' + comment_pos +  '"><td class ="edit-tag">'
+	// 	+ TO_TAG[comment_pos].page_name +'</td><td class ="edit-tag">' + TO_TAG[comment_pos].post_message +'</td><td class ="edit-tag">' 
+	// 	+ TO_TAG[comment_pos].post_comments_message +'</td><td class ="edit-tag">' + response+ '</td></tr>');
 
-	TAGGERS.push({'tag_qid': 'q1', 'user_to_tag': 'chalenge', 'user_email': 'chalengezw@gmail.com', 'comments_to_tag': 15})
-	TAGGERS.push({'tag_qid': 'q1', 'user_to_tag': 'chris', 'user_email': 'chris@gmail.com', 'comments_to_tag': 5})
-	TAGGERS.push({'tag_qid': 'q1', 'user_to_tag': 'sidney', 'user_email': 'sidney@gmail.com', 'comments_to_tag': 10})
-
-	var sessionsData = {'sessionsObject' : JSON.stringify({'taggers_info': TAGGERS})}
-	
-	$.ajax({
-		url: 'create',
-		type: 'POST',
-		data: sessionsData,
-		dataType: "json"
-	}).success(function (data) {
-		console.log(data);
-	});
+	console.log('Tapinda v2')
 }
