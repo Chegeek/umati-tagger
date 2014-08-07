@@ -1,7 +1,7 @@
 <!DOCTYPE html>	
 <html>
 <head>
-    <title>Tagger</title>
+    <title>Data Tagger</title>
     
     <!-- link to css file -->
     <link rel="stylesheet" type="text/css" href="../static/_css/bootstrap.css"/>
@@ -15,18 +15,20 @@
 <body>
 	<div id="container">
 		{% for message in get_flashed_messages() %}
+		<!-- {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %} -->
   		<div class=flash>{{ message }}</div>
   		{% endfor %}		
 		<!--Form Header-->
 		<header id = "tag-header">
-			<h1 id= 'pg_head'>Tagger:</h1>
+			<h1 id= 'pg_head'>Data Tagger:</h1>
 			<span>
 				<label>Session ID:</label>
 				<label id='sessionid-text'>{{session_id}}</label>
 				<label>Session User:</label>
 				<label id='session-user'></label>
 				<label>Session Tag Count:</label>
-				<label id='session-tags'></label>				
+				<label id='session-tags'></label>
+				<label id='error-msg'></label>
 			</span> 
 		</header>
 

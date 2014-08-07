@@ -1,31 +1,33 @@
 # -*- coding: utf-8 -*- 
 
-# import os, glob, re, json
-# import pandas as pd
 import os
 import binascii
-import dbaseops
 import dbaseops
 import json
 import ast
 import time
 
 from flask import Flask, request, session, g, redirect, url_for, \
-      abort, render_template, flash, jsonify
+      abort, render_template, flash, jsonify, Markup
 from time import strftime
 from flask.ext.mail import Mail, Message
 
 ''' ------------------------------- setup and initialize app ------------------------------- '''
-MAIL_SERVER='smtp.gmail.com'
-MAIL_PORT=465
-MAIL_USE_TLS = False
-MAIL_USE_SSL= True
-MAIL_USERNAME = 'chalenge@ihub.co.ke'
-MAIL_PASSWORD = 'testdevapp'
-# DEFAULT_MAIL_SENDER = chalengezw@gmail
-
 app = Flask(__name__)
 app.config.from_object(__name__)
+
+app.config.update(dict(
+    DEBUG = True,
+    MAIL_SERVER='smtp.gmail.com',
+    MAIL_PORT=465,
+    MAIL_USE_TLS = True,
+    MAIL_USE_SSL= False,
+    MAIL_USERNAME = 'chalenge@ihub.co.ke',
+    MAIL_PASSWORD = 'testdevapp',
+    DEFAULT_MAIL_SENDER = ("Python Tagging App", "chalenge@ihub.co.ke"),
+    SECRET_KEY = 'MPF\xfbz\xfbz\xa7\xcf\x84\x8cd\rg\xd5\x04\xee\xa4\xd6\xb9]\xf8\x0e\xf3'
+))
+
 mail = Mail(app)
 
 ''' ---------------------------------------- Routes ---------------------------------------- '''
@@ -62,27 +64,34 @@ def session_code(tag_sessionid):
 @app.route('/view/<tag_sessionid>', methods=['GET'])
 def load_session_data(tag_sessionid):
     
+    '''' Code to read session information from the Redis'''
     try:        
-    # '''' Code to read session information from the Redis'''
-        tag_sessionid = '/sessions/' + tag_sessionid
+        user_session = '/sessions/' + tag_sessionid
         dbase = dbaseops.RedisDBase()
-        session_info = dbase.getUserSessionInfo(tag_sessionid)
+        session_info = dbase.getUserSessionInfo(user_session)
         
-        tag_qstid = session_info['tag_qst_id']
-        tag_qst, tag_keys = dbase.getSessionInfo(tag_qstid)
-
-        comments_list = session_info['comments_to_tag']
+        # Raise an exception when session information has not been found
+        if not session_info:
+            raise NameError('<br><br><span>Session {0} has not been found<span>'.format(tag_sessionid))
         
-        # Comment ID formatting to remove unicode and array characters
+        # Get the tagging question and keys from Redis using session_id
+        tag_qst, tag_keys = dbase.getSessionInfo(session_info['tag_qst_id'])
+        
+        # Comment ID formatting to remove unicode 
         tag_keys = eval(tag_keys)
 
-        comments_list = str(comments_list).strip('[]')
+        # Create the comments list as a string by removing array characters
+        comments_list = str(session_info['comments_to_tag']).strip('[]')
 
-        #Get the comment records from the PostGres database
+        # Raise an exception when the comments list is empty
+        if not comments_list:
+            raise NameError('<br><br>Tagging Sesssion {0} is complete. Thank you for your submissions!'.format(tag_sessionid))
+
+        # Get the comment records from the PostGres database
         dbase = dbaseops.PostGresDBase()
         comments_data = dbase.getComments(comments_list)
         
-        #Return the updated session with actual comment data
+        # Return the updated session with actual comment data
         session_info['comments_to_tag'] = comments_data
 
         session_info['tag_qst'] = tag_qst
@@ -90,132 +99,137 @@ def load_session_data(tag_sessionid):
 
         return jsonify(session_info)            
 
-    except Exception as e:
-        ''' Code to handle the various Exceptions here. Probably Flashing the message'''
-        return 'Session ({0}) has not been found'.format(e)
+    # Code to handle Exceptions
+    except NameError as detail:
+        # Return the error message and go to form for completion
+        flash(Markup(detail))
+        return url_for('complete')
+    
+    except Exception as detail:
+        # Return error message on current form for any other errors
+        return jsonify({'error': detail})
 
-@app.route('/sessions/add', methods=['POST'])
+# @app.route('/sessions/add', methods=['POST'])
+@app.route('/savelabels', methods=['GET','POST'])
 def saveLabels():
+    
+    ''' Code to post tagged data to PostGresDBase  and update tag list and remove those tagged in RedisDBase'''
+    
+    #Get the string object passed from the form where data was tagged
     tagdataString = request.form['toSave']
+
+    #Convert the data into a json object
     tagdata = json.loads(tagdataString)
 
-    # tag_time = strftime("%Y-%m-%d %H:%M:%S")
-
+    #Use try to handle excpetions
     try:
-        ''' Code to write to a CSV file '''
-        # filePath = 'static/_data/tagged_data/' + tagdata['session_qst'] + '.csv'
-        # with open(filePath, "a+") as csvreader:
-        #     qst_file = csv.writer(csvreader, delimiter=',')
-        #     tag_lines=[]
-        #     for tag_item in tagdata['tags']:
-        #         line =[]
-        #         line.append(tagdata['session_id'])
-        #         line.append(tagdata['session_desc'])
-        #         line.append(tagdata['tagged_by'])
-        #         line.append(tag_time)
-        #         line.append(tag_item)
-        #         line.append(tagdata['tags'][tag_item])
-        #         tag_lines.append(line)
 
-
-        #         session_info['comments_to_tag'].remove(tag_item)
-                # = session_info['comments_to_tag'][tagdata['tag_pos']:]
-
-            # qst_file.writerows(tag_lines)
-            # session_info = json.load(qst_file)
-
-        ''' Code to post tagged data to PostGresDBase '''
+        #Create a connection to PostGres Database  and save the tagged data in the Postgres database
         dbase = dbaseops.PostGresDBase()
-        dbase.postTags(tagdata)   
+        # dbase.postTags(tagdata)   
 
-        '''' Code to update tag list and remove those tagged in RedisDBase or wherever '''
-        tag_sessionid = '/sessions/' + tagdata['session_id']
+        #Get the tag_sessionid as stored in Redis database
+        tag_sessionid = url_for('session_code', tag_sessionid= tagdata['session_id'])
+        
+        #Create a connection to Redis Database
         dbase = dbaseops.RedisDBase()
+
+        #Get the whole session details. We want to get initial list of comments that needed to be tagged from Redis
         session_info = dbase.getUserSessionInfo(tag_sessionid)
 
+        #List comes back as a string, so convert it to a proper list
         session_comments = eval(session_info['comments_to_tag'])
         
+        #Loop through the list that was posted as tagged from web form and remove them the original Redis list
         for tag_item in tagdata['tags']:
             session_comments.remove(tag_item)
 
         # Update the RedisDBase to remove saved tags
-        dbase.updateUserSessionTagList(tag_sessionid, session_comments)
+        # dbase.updateUserSessionTagList(tag_sessionid, session_comments)
 
-        # Return to and display success message
+        # Return and display success message. If all data has been tagged go to main page else ask if they want to continue
         if len(session_comments):
-            # flash('<span>Tags Saved! Do you want to save more tags? <a href="#" onclick="continueTags()">Yes</a><a href="#" onclick="continueTags()">Yes</a></span>')    
-            # return redirect(url_for('session_code', tag_sessionid= tagdata['session_id']))
-            # return redirect(url_for('index'))
-            return render_template('index.html')
-            # return redirect(url_for('create'))
+            message = '''<span><p>Tags Saved!</p></span><br><br><span>Do you want to save more tags? Click <a href="/create
+                 ">here</a> to continue tagging</span>'''
         else:
-            flash('Tags Saved! No more tags, session complete')
-            return redirect(url_for('index'))
+            message = '<span><p>Tags Saved!</p></span><br><br>Tagging Sesssion is now complete... Thank you for your submissions!'
 
-        # '<span>Tags Saved! Do you want to save more tags? <a href="#" onclick="continueTags()">Yes</a><a href="#" onclick="continueTags()">Yes</a></span>')
+        #Show message and open page with confirmation that tags have been saved. 
+        flash(Markup(message))
+        return url_for('complete')        
+
+    # If we encounter any errors. Show the error message
+    except Exception as e:
+        return jsonify({'error': 'Error ({0})'.format(e)})
+
+@app.route('/postSessions', methods=['GET', 'POST'])
+def postSessions():
+    ''' --------------------------------- Code to create sessions -------------------------------------- '''                  
+    try:
+
+        sessions_to_create = {}
+        start_position = 0
+
+        details_string = request.form['sessionsObject']
+        sessions_details = (json.loads(details_string))['taggers_info']
+
+        total_tags = sum(item['number_to_tag'] for item in sessions_details['taggers'])
+        
+        dbase = dbaseops.PostGresDBase()
+        comments_to_tag = dbase.getToTag(total_tags)
+        
+        #Save the tagging session details to Redis
+        dbase = dbaseops.RedisDBase()        
+        tag_qstid = dbase.postSessionInfo(sessions_details)
+
+        #Create individual user tagging sessions with list of comment ids
+        with mail.connect() as conn:
+            for user_session in sessions_details['taggers']:
+                
+                user_session['tag_qst_id'] = tag_qstid
+
+                end_position =  start_position + user_session['number_to_tag']
+                user_session['comments_to_tag'] = comments_to_tag[start_position:end_position]
+
+                # Move position where to start slicing the list of comments_to_tag
+                start_position+=user_session['number_to_tag']
+                
+                # Create the random path for the tagging session
+                tag_session_url = url_for('session_code', tag_sessionid=str(binascii.b2a_hex(os.urandom(10))))
+
+                # Add to the object of sessions to create for posting in the RedisDBase
+                sessions_to_create[tag_session_url] = user_session
+
+                ''' --------------------------------- Code to create and send the emails to the users -------------------------------------- '''                  
+                message = '''Hello, %s. \n\nPlease tag the data in response to the question\n\n %s\n\n 
+                            Find the tagging session at http://192.168.33.71:5000%s .\n\nThanks,''' \
+                             % (user_session['user_to_tag'], sessions_details['tag_qst'],  tag_session_url)
+                subject = 'Request to tag data' 
+                msg = Message(recipients=[user_session['user_email']],
+                                body=message,
+                                subject=subject)
+
+                conn.send(msg)        
+
+            ''' --------------------------------- Save each user session details to Redis -------------------------------------- '''     
+            dbase.postUserSessionInfo(sessions_to_create)
+
+        #Show message and open page with confirmation that tags have been saved. 
+        message = '''<span><p>Sessions Created!</p></span><br><br><span>Do you want to save more tags? Click <a href="' + tag_sessionid +
+            '">here</a> to continue tagging</span>'''        
+        
+        flash(Markup(message))
+        return url_for('complete')                
+        # return jsonify(sessions_to_create)
 
     except Exception as e:
-        return 'Posting tags has this error ({0})'.format(e)    
+        return jsonify({'error': 'Creating tagging sessions has this error ({0})'.format(e)})
 
-@app.route('/sessions/create', methods=['GET', 'POST'])
-def create_sessions():
-    '''' Code to create sessions '''
-    sessions_to_create = {}
-    start_position = 0
-    details_string = request.form['sessionsObject']
-    sessions_details = (json.loads(details_string))['taggers_info']
-
-    total_tags = sum(item['number_to_tag'] for item in sessions_details['taggers'])
-    
-    dbase = dbaseops.PostGresDBase()
-    comments_to_tag = dbase.getToTag(total_tags)
-    
-    #Save the tagging session details to Redis
-    dbase = dbaseops.RedisDBase()        
-    tag_qstid = dbase.postSessionInfo(sessions_details)
-
-    #Create individual user tagging sessions with list of comment ids
-    with mail.connect() as conn:
-        for user_session in sessions_details['taggers']:
-            
-            user_session['tag_qst_id'] = tag_qstid
-
-            end_position =  start_position + user_session['number_to_tag']
-            user_session['comments_to_tag'] = comments_to_tag[start_position:end_position]
-
-            '''' Move position where to start slicing the list of comments_to_tag'''
-            start_position+=user_session['number_to_tag']
-            
-            '''' Create the random path for the tagging session '''
-            # tag_session_url = url_for('session_code', tag_sessionid=str(user_session['tag_qid'] + '_'+ user_session['user_to_tag']))
-            tag_session_url = url_for('session_code', tag_sessionid=str(binascii.b2a_hex(os.urandom(10))))
-
-            '''' Add to the Object of sessions to create in RedisDBase '''
-            sessions_to_create[tag_session_url] = user_session
-
-            ''' --------------------------------- Code to send the emails to the users -------------------------------------- '''                  
-            message = 'Hello, %s. \n\nPlease tag the data in response to the question\n\n %s\n\n Find the tagging session at http://192.168.33.71%s .\n\nThanks,' \
-                         % (user_session['user_to_tag'], sessions_details['tag_qst'],  tag_session_url)
-            subject = 'Request to tag data' 
-            msg = Message(sender=("Python App Development", "chalenge@ihub.co.ke"),
-                            recipients=[user_session['user_email']],
-                            body=message,
-                            subject=subject)
-
-            conn.send(msg)        
-
-    ''' --------------------------------- Save each user session details to Redis -------------------------------------- '''     
-    # dbase.postUserSessionInfo(sessions_to_create)
-
-    # result = {'comments': total_tags}
-    # result = {'comments': sessions_to_create}
-    # return jsonify(**result)    
-    return jsonify(sessions_to_create)
+@app.route('/complete')
+def complete():
+    return render_template('complete.html')
 
 ''' --------------------------------- Main Function -------------------------------------- '''                  
 if __name__ == '__main__':
-    app.secret_key = 'MPF\xfbz\xfbz\xa7\xcf\x84\x8cd\rg\xd5\x04\xee\xa4\xd6\xb9]\xf8\x0e\xf3'
-    app.debug = True
     app.run(host='0.0.0.0',
          port=int('5000'))
-    # load_data()

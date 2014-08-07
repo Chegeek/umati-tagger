@@ -44,6 +44,12 @@ body {
 	z-index: 100;
 }
 
+#error-msg {
+	left: calc(100% - 300px);
+	position: absolute;
+	text-align: right;
+}
+
 #create-settings {
 	height: 150px;
 }

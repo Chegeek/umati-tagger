@@ -30,18 +30,20 @@ function createTagSession() {
 		TAGGERS['taggers'].push({'user_to_tag': $(this).children('.tname')[0].innerText, 'user_email': $(this).children('.temail')[0].innerText, 'number_to_tag': parseInt($(this).children('.tnum')[0].innerText)})
 	});
 
-
 	var sessionsData = {'sessionsObject' : JSON.stringify({'taggers_info': TAGGERS})}
 
-	// console.log(sessionsData)
-
 	$.ajax({
-		url: '/sessions/create',
+		url: 'postSessions',
 		type: 'POST',
 		data: sessionsData,
 		dataType: "json"
 	}).success(function (data) {
-		console.log(data);
+		if (data.error) {
+			$('#error-msg').html(data.error).style('background', 'aliceblue')
+		}
+		else {
+			document.location.href = data
+		}
 	});
 }
 

@@ -74,7 +74,7 @@ class RedisDBase():
             self.r_server.hmset(session_id, sessions_to_create[session_id])
 
     def getSessionInfo(self, session_id):
-        self.tag_qst, self.key_options = self.r_server.hmget(session_id, 'tag_qst_id', 'key_options')
+        self.tag_qst, self.key_options = self.r_server.hmget(session_id, 'tag_qst', 'key_options')
         return self.tag_qst, self.key_options
 
     def getUserSessionInfo(self, session_id):
