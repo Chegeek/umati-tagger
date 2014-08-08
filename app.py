@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*- 
 
+'''
+Created on Jun 18, 2014
+@author: chalenge
+'''
+
 import os
 import binascii
 import dbaseops
@@ -145,7 +150,7 @@ def saveLabels():
             session_comments.remove(tag_item)
 
         # Update the RedisDBase to remove saved tags
-        # dbase.updateUserSessionTagList(tag_sessionid, session_comments)
+        dbase.updateUserSessionTagList(tag_sessionid, session_comments)
 
         # Return and display success message. If all data has been tagged go to main page else ask if they want to continue
         if len(session_comments):

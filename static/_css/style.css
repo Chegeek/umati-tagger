@@ -13,7 +13,7 @@ body {
 	/*margin: 40px auto;*/
 	overflow: hidden;
 	/*width: 99%;*/
-	background-color:white;
+	/*background-color:white;*/
 	/*border: #ccc solid 1px;*/
 	height: calc(100% - 255px);
 	padding: 0 5px;
@@ -40,7 +40,14 @@ body {
 
 #login {
 	display: table;
-	margin: 0 auto;
+	margin: 30px auto;
+	z-index: 100;
+}
+
+#btn-div {
+	width: 402px;
+	display: table;
+	margin: 50px auto 0;
 	z-index: 100;
 }
 
@@ -50,8 +57,16 @@ body {
 	text-align: right;
 }
 
+#intro-msg {
+	font-size: 14pt;
+}
+
 #create-settings {
 	height: 150px;
+}
+
+#create-sessions {
+	width: 400px;
 }
 
 #create-taggers {
