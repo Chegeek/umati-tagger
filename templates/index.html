@@ -1,7 +1,7 @@
 <!DOCTYPE html>	
 <html>
 <head>
-    <title>Tagger</title>
+    <title>Data Tagger</title>
     
     <!-- link to css file -->
     <!-- <link rel="stylesheet" type="text/css" href="../static/_css/style.css" /> -->
@@ -16,20 +16,19 @@
 <body>
 	<div id="container">
 		<!--Form Header-->
-		{% for message in get_flashed_messages() %}
-  		<div class=flash>{{ message }}</div>
-  		{% endfor %}
-
-		<header id = "todo-header">
-			<h1>Tagger:</h1>
-		</header>
-
 		<div id='landing-div'>
-			{% block body %}{% endblock %}
+			<header id = "todo-header">
+				<h1>Data Tagger</h1>
+			</header>
+
 			<span>
-				<p>Some message to go here</p>
+				<p id='intro-msg'>A web platform that can be used to tag data collected from various sources.
+					Crowd Source tagging to different people by creating a question then requesting them to tag via links sent by email.
+				</p>
 			</span>
-			<a id="create-sessions" href="/create" class="myButtons">Create Tagging Sessions</a>
+			<div id ='btn-div'><a id="create-sessions" href="/create" class="myButtons">Start tagging by creating tagging sessions</a></div>
+
+			{% block body %}{% endblock %}
 		</div>
 		
 	</div>
