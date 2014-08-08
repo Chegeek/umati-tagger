@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*- 
 
+'''
+Created on Jun 18, 2014
+@author: chalenge
+'''
+
 import os
 import binascii
 import dbaseops

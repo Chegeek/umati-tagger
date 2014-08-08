@@ -3,9 +3,9 @@
 
 '''
 Created on Jun 18, 2014
-
 @author: chalenge
 '''
+
 import settings
 import psycopg2
 import redis

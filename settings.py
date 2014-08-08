@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 '''
 Created on Jun 18, 2014
-
 @author: chalenge
 
 General settings for the app! 
