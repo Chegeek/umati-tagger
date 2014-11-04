@@ -28,3 +28,8 @@ To tag data an app administrator will have created a tag session for the user. T
 
 #### Tagging
 Follow the link sent to users email address. Tag the data by pressing the keys specified on the form, e.g. pressing 'Y' or 'N' to respond to the prompt specified. If a mistake was made a user can click the record in the table and it will be placed back in the tagging label section, and the user can correct the entry.
+
+### Future Updates
+1. Enabling user to select database and/or table from within the app
+2. Allowing user to specify keys to use for a particular session
+3. UI improvements
