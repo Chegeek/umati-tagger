@@ -11,7 +11,6 @@ A web platform that will be can be used to tag textual or conversational data co
 3. psycopg2 library or any other library to your database
 4. redis database
 5. python redis library
-6. 
 
 ### Steps to run the tagger on your machine
 
@@ -20,7 +19,6 @@ A web platform that will be can be used to tag textual or conversational data co
 3. In your command line, go to umati-tagger folder
 4. Open the settings.py and change the app configuration, mail server and database it will connect to
 5. Run app.py and open the localhost address which it will broradcast to
-6. 
 
 ### Using the app 
 #### Creating Sessions
